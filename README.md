@@ -19,6 +19,7 @@ Using a 3 km service radius per dark store, two stores have more than 70% servic
 
 ## Rationalisation cutoff sensitivity
 
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
 The merged Instamart + Zepto estate starts with 2,127 stores. Re-running the rationalisation count at different overlap cutoffs gives the following retained dark-store counts and overlap stats for each retained merged network:
 
 | Overlap cutoff | Centre-distance threshold | Retained merged stores | Rationalised / cut stores | Retained Instamart | Retained Zepto | Unique area covered | Avg nearest-neighbour overlap | Avg positive pair overlap | 75th percentile nearest-neighbour overlap | Overlapping pairs |
@@ -27,16 +28,34 @@ The merged Instamart + Zepto estate starts with 2,127 stores. Re-running the rat
 | 60% | 1.918 km | 1,030 | 1,097 | 685 | 345 | 18,961 sq. km | 39.3% | 22.1% | 53.7% | 2,172 |
 | 70% | 1.427 km | 1,290 | 837 | 843 | 447 | 19,625 sq. km | 48.2% | 24.1% | 63.6% | 4,219 |
 | 80% | 0.946 km | 1,569 | 558 | 976 | 593 | 19,929 sq. km | 55.8% | 25.5% | 71.6% | 7,858 |
+=======
+The merged Instamart + Zepto estate starts with 2,127 stores. Re-running the rationalisation count at different overlap cutoffs gives the following retained dark-store counts:
+
+| Overlap cutoff | Centre-distance threshold | Retained merged stores | Rationalised / cut stores | Retained Instamart | Retained Zepto |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 50% | 2.424 km | 848 | 1,279 | 582 | 266 |
+| 60% | 1.918 km | 1,030 | 1,097 | 685 | 345 |
+| 70% | 1.427 km | 1,290 | 837 | 843 | 447 |
+| 80% | 0.946 km | 1,569 | 558 | 976 | 593 |
+>>>>>>> main
 
 ## Standalone overlap calibration
 
 For calibration, the script also computes standalone same-brand overlap. The most useful headline is the **average nearest-neighbour overlap**: for each store, find the same-brand store with the largest 3 km service-area overlap, then average those per-store maxima.
 
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
 | Brand | Stores | Unique area covered | Avg nearest-neighbour overlap | Avg positive pair overlap | 75th percentile nearest-neighbour overlap | Overlapping pairs |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Blinkit | 1,954 | 26,474 sq. km | 51.8% | 25.7% | 71.2% | 10,505 |
 | Swiggy Instamart | 1,038 | 16,895 sq. km | 45.2% | 24.6% | 62.9% | 3,268 |
 | Zepto | 1,089 | 13,576 sq. km | 55.3% | 25.1% | 70.6% | 5,712 |
+=======
+| Brand | Stores | Avg nearest-neighbour overlap | Avg positive pair overlap | 75th percentile nearest-neighbour overlap | Overlapping pairs |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Blinkit | 1,954 | 51.8% | 25.7% | 71.2% | 10,505 |
+| Swiggy Instamart | 1,038 | 45.2% | 24.6% | 62.9% | 3,268 |
+| Zepto | 1,089 | 55.3% | 25.1% | 70.6% | 5,712 |
+>>>>>>> main
 
 ## Methodology
 

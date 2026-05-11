@@ -25,6 +25,7 @@
       "p75_nearest_neighbor_overlap": 0.7120845304838572,
       "p90_nearest_neighbor_overlap": 0.7985684020454498,
       "unique_service_area_sq_km": 26474.296188706336
+      "p90_nearest_neighbor_overlap": 0.7985684020454498
     },
     "swiggy_instamart": {
       "store_count": 1038,
@@ -38,6 +39,7 @@
       "p75_nearest_neighbor_overlap": 0.6290774570533828,
       "p90_nearest_neighbor_overlap": 0.7327418546554985,
       "unique_service_area_sq_km": 16895.35725671368
+      "p90_nearest_neighbor_overlap": 0.7327418546554985
     },
     "zepto": {
       "store_count": 1089,
@@ -51,6 +53,7 @@
       "p75_nearest_neighbor_overlap": 0.7059222678429703,
       "p90_nearest_neighbor_overlap": 0.7831783762035842,
       "unique_service_area_sq_km": 13575.910722496947
+      "p90_nearest_neighbor_overlap": 0.7831783762035842
     }
   },
   "rationalisation_scenarios": [
@@ -151,4 +154,8 @@
       "method": "greedy_pruned_dominating_set"
     }
   ]
+      "method": "greedy_pruned_dominating_set"
+    }
+  ]
+  "overlap_cutoff": 0.7
 }
