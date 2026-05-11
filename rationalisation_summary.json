@@ -96,4 +96,5 @@
       "method": "greedy_pruned_dominating_set"
     }
   ]
+  "overlap_cutoff": 0.7
 }
