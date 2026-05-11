@@ -126,7 +126,11 @@ def standalone_overlap_stats(stores: Sequence[Store]) -> Dict[str, object]:
                     nearest_overlaps[other_index] = max(nearest_overlaps[other_index], ratio)
 
     nearest_nonzero = [value for value in nearest_overlaps if value > 0]
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+    stats = {
+=======
     return {
+>>>>>>> main
         "store_count": len(stores),
         "total_pairs": total_pairs,
         "overlapping_pairs": len(positive_pair_overlaps),
@@ -138,6 +142,146 @@ def standalone_overlap_stats(stores: Sequence[Store]) -> Dict[str, object]:
         "p75_nearest_neighbor_overlap": statistics.quantiles(nearest_overlaps, n=4)[2] if len(nearest_overlaps) >= 4 else 0.0,
         "p90_nearest_neighbor_overlap": statistics.quantiles(nearest_overlaps, n=10)[8] if len(nearest_overlaps) >= 10 else 0.0,
     }
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+    stats["unique_service_area_sq_km"] = unique_service_area_sq_km(stores)
+    return stats
+
+
+def overlap_components(stores: Sequence[Store], threshold_km: float) -> List[List[int]]:
+    """Return components of stores whose service circles touch or overlap."""
+    cell_degrees = threshold_km / 111.0
+    buckets: Dict[Tuple[int, int], List[int]] = defaultdict(list)
+    for index, store in enumerate(stores):
+        buckets[(int(float(store["lat"]) / cell_degrees), int(float(store["lng"]) / cell_degrees))].append(index)
+
+    adjacency: List[Set[int]] = [set() for _ in stores]
+    for index, store in enumerate(stores):
+        bucket_lat = int(float(store["lat"]) / cell_degrees)
+        bucket_lng = int(float(store["lng"]) / cell_degrees)
+        for lat_offset in range(-2, 3):
+            for lng_offset in range(-2, 3):
+                for other_index in buckets.get((bucket_lat + lat_offset, bucket_lng + lng_offset), []):
+                    if other_index <= index:
+                        continue
+                    other = stores[other_index]
+                    distance = haversine_km(
+                        float(store["lat"]),
+                        float(store["lng"]),
+                        float(other["lat"]),
+                        float(other["lng"]),
+                    )
+                    if distance < threshold_km:
+                        adjacency[index].add(other_index)
+                        adjacency[other_index].add(index)
+
+    seen = [False] * len(stores)
+    components: List[List[int]] = []
+    for start in range(len(stores)):
+        if seen[start]:
+            continue
+        stack = [start]
+        seen[start] = True
+        component: List[int] = []
+        while stack:
+            node = stack.pop()
+            component.append(node)
+            for neighbor in adjacency[node]:
+                if not seen[neighbor]:
+                    seen[neighbor] = True
+                    stack.append(neighbor)
+        components.append(component)
+    return components
+
+
+def project_component(stores: Sequence[Store], component: Sequence[int]) -> List[Tuple[float, float]]:
+    """Project one local component to kilometres with an equirectangular tangent plane."""
+    lat0 = statistics.fmean(float(stores[index]["lat"]) for index in component)
+    lng0 = statistics.fmean(float(stores[index]["lng"]) for index in component)
+    cos_lat0 = math.cos(math.radians(lat0))
+    points: List[Tuple[float, float]] = []
+    for index in component:
+        store = stores[index]
+        x = EARTH_RADIUS_KM * math.radians(float(store["lng"]) - lng0) * cos_lat0
+        y = EARTH_RADIUS_KM * math.radians(float(store["lat"]) - lat0)
+        points.append((x, y))
+    return points
+
+
+def merge_intervals(intervals: Sequence[Tuple[float, float]]) -> List[Tuple[float, float]]:
+    if not intervals:
+        return []
+    ordered = sorted(intervals)
+    merged: List[Tuple[float, float]] = []
+    for start, end in ordered:
+        if not merged or start > merged[-1][1]:
+            merged.append((start, end))
+        else:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+    return merged
+
+
+def circle_union_area_km2(points: Sequence[Tuple[float, float]], radius_km: float = SERVICE_RADIUS_KM) -> float:
+    """Calculate planar union area for equal-radius circles from uncovered arcs."""
+    two_pi = 2 * math.pi
+    area = 0.0
+    for index, (center_x, center_y) in enumerate(points):
+        covered_intervals: List[Tuple[float, float]] = []
+        fully_covered = False
+        for other_index, (other_x, other_y) in enumerate(points):
+            if other_index == index:
+                continue
+            dx = other_x - center_x
+            dy = other_y - center_y
+            distance = math.hypot(dx, dy)
+            if distance <= 1e-9:
+                if other_index < index:
+                    fully_covered = True
+                    break
+                continue
+            if distance >= 2 * radius_km:
+                continue
+            angle = math.atan2(dy, dx)
+            half_width = math.acos(distance / (2 * radius_km))
+            start = (angle - half_width) % two_pi
+            end = (angle + half_width) % two_pi
+            if start <= end:
+                covered_intervals.append((start, end))
+            else:
+                covered_intervals.append((start, two_pi))
+                covered_intervals.append((0.0, end))
+        if fully_covered:
+            continue
+
+        merged = merge_intervals(covered_intervals)
+        uncovered: List[Tuple[float, float]] = []
+        cursor = 0.0
+        for start, end in merged:
+            if start > cursor:
+                uncovered.append((cursor, start))
+            cursor = max(cursor, end)
+        if cursor < two_pi:
+            uncovered.append((cursor, two_pi))
+
+        for start, end in uncovered:
+            area += 0.5 * (
+                radius_km * center_x * (math.sin(end) - math.sin(start))
+                - radius_km * center_y * (math.cos(end) - math.cos(start))
+                + radius_km * radius_km * (end - start)
+            )
+    return area
+
+
+def unique_service_area_sq_km(stores: Sequence[Store]) -> float:
+    """Return total unique area covered by the stores' 3 km service circles."""
+    if not stores:
+        return 0.0
+    total_area = 0.0
+    for component in overlap_components(stores, 2 * SERVICE_RADIUS_KM):
+        points = project_component(stores, component)
+        total_area += circle_union_area_km2(points)
+    return total_area
+=======
+>>>>>>> main
 
 def build_overlap_graph(stores: Sequence[Store], threshold_km: float) -> List[Set[int]]:
     """Build a graph linking stores whose 3 km circles overlap by >70%."""
@@ -349,8 +493,15 @@ def rationalisation_scenario_counts(stores: Sequence[Store], cutoffs: Sequence[f
         threshold_km = distance_for_overlap(cutoff)
         adjacency = build_overlap_graph(stores, threshold_km)
         retained_indexes = rationalise_greedy_pruned(stores, adjacency)
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+        retained_stores = [store for index, store in enumerate(stores) if index in retained_indexes]
         retained_counts = Counter(str(stores[index]["brand"]) for index in retained_indexes)
         cut_counts = Counter(str(store["brand"]) for index, store in enumerate(stores) if index not in retained_indexes)
+        retained_overlap_stats = standalone_overlap_stats(retained_stores)
+=======
+        retained_counts = Counter(str(stores[index]["brand"]) for index in retained_indexes)
+        cut_counts = Counter(str(store["brand"]) for index, store in enumerate(stores) if index not in retained_indexes)
+>>>>>>> main
         scenarios.append(
             {
                 "overlap_cutoff": cutoff,
@@ -361,6 +512,10 @@ def rationalisation_scenario_counts(stores: Sequence[Store], cutoffs: Sequence[f
                 "retained_zepto": retained_counts["Zepto"],
                 "cut_instamart": cut_counts["Instamart"],
                 "cut_zepto": cut_counts["Zepto"],
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+                "retained_overlap_stats": retained_overlap_stats,
+=======
+>>>>>>> main
                 "method": "greedy_pruned_dominating_set",
             }
         )
@@ -392,9 +547,18 @@ def render_html(
 ) -> str:
     scenario_rows = "".join(
         f"<tr><td>{scenario['overlap_cutoff']:.0%}</td>"
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+        f"<td>{scenario['retained_total']:,}</td>"
+        f"<td>{scenario['cut_total']:,}</td>"
+        f"<td>{scenario['retained_overlap_stats']['unique_service_area_sq_km']:,.0f}</td>"
+        f"<td>{scenario['retained_overlap_stats']['average_nearest_neighbor_overlap']:.1%}</td>"
+        f"<td>{scenario['retained_overlap_stats']['average_overlapping_pair_overlap']:.1%}</td>"
+        f"<td>{scenario['retained_overlap_stats']['p75_nearest_neighbor_overlap']:.1%}</td></tr>"
+=======
         f"<td>{scenario['overlap_threshold_km']:.3f}</td>"
         f"<td>{scenario['retained_total']:,}</td>"
         f"<td>{scenario['cut_total']:,}</td></tr>"
+>>>>>>> main
         for scenario in stats["rationalisation_scenarios"]
     )
     return f"""<!doctype html>
@@ -413,7 +577,11 @@ def render_html(
       z-index: 1000;
       top: 16px;
       left: 16px;
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+      max-width: 460px;
+=======
       max-width: 390px;
+>>>>>>> main
       padding: 16px 18px;
       border-radius: 14px;
       background: rgba(255,255,255,0.94);
@@ -452,8 +620,13 @@ def render_html(
       <div class=\"metric\"><strong>{stats['blinkit_total']:,}</strong><span>Blinkit stores</span></div>
     </div>
     <p>3 km circles overlap by 70% when centres are within <strong>{stats['overlap_threshold_km']:.3f} km</strong>. The retained set is an exact minimum dominating set of the overlap graph.</p>
+<<<<<<< codex/calculate-rationalised-dark-stores-for-merger-iqslh8
+    <p>Avg nearest same-brand overlap: Blinkit <strong>{stats['standalone_overlap_stats']['blinkit']['average_nearest_neighbor_overlap']:.1%}</strong>, Instamart <strong>{stats['standalone_overlap_stats']['swiggy_instamart']['average_nearest_neighbor_overlap']:.1%}</strong>, Zepto <strong>{stats['standalone_overlap_stats']['zepto']['average_nearest_neighbor_overlap']:.1%}</strong>. Unique standalone area: Blinkit <strong>{stats['standalone_overlap_stats']['blinkit']['unique_service_area_sq_km']:,.0f} km²</strong>, Instamart <strong>{stats['standalone_overlap_stats']['swiggy_instamart']['unique_service_area_sq_km']:,.0f} km²</strong>, Zepto <strong>{stats['standalone_overlap_stats']['zepto']['unique_service_area_sq_km']:,.0f} km²</strong>.</p>
+    <table class="scenario-table"><thead><tr><th>Cutoff</th><th>Retained</th><th>Cut</th><th>Area km²</th><th>Avg NN</th><th>Avg pair</th><th>P75 NN</th></tr></thead><tbody>{scenario_rows}</tbody></table>
+=======
     <p>Avg nearest same-brand overlap: Blinkit <strong>{stats['standalone_overlap_stats']['blinkit']['average_nearest_neighbor_overlap']:.1%}</strong>, Instamart <strong>{stats['standalone_overlap_stats']['swiggy_instamart']['average_nearest_neighbor_overlap']:.1%}</strong>, Zepto <strong>{stats['standalone_overlap_stats']['zepto']['average_nearest_neighbor_overlap']:.1%}</strong>.</p>
     <table class="scenario-table"><thead><tr><th>Cutoff</th><th>Km</th><th>Retained</th><th>Cut</th></tr></thead><tbody>{scenario_rows}</tbody></table>
+>>>>>>> main
     <div class=\"legend-row\"><span class=\"swatch\" style=\"background:#2563eb\"></span>Retained Instamart + Zepto stores</div>
     <div class=\"legend-row\"><span class=\"swatch\" style=\"background:#16a34a\"></span>Blinkit stores</div>
     <div class=\"legend-row\"><span class=\"swatch\" style=\"background:#dc2626\"></span>Cut merged stores (toggleable layer)</div>
