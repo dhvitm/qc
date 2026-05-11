@@ -384,7 +384,9 @@ def main() -> None:
     }
 
     (ROOT / "rationalisation_summary.json").write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
-    (ROOT / "index.html").write_text(render_html(retained_merged, cut_merged, blinkit_features, stats), encoding="utf-8")
+    (ROOT / "rationalisation_map.html").write_text(
+        render_html(retained_merged, cut_merged, blinkit_features, stats), encoding="utf-8"
+    )
     print(json.dumps(stats, indent=2))
 
 

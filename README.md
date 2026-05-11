@@ -25,8 +25,9 @@ Using a 3 km service radius per dark store, two stores have more than 70% servic
 
 ## Files
 
-- `index.html` is the Leaflet map of retained merged stores, all Blinkit stores, and a toggleable layer for cut merged stores.
-- `generate_map.py` recomputes the rationalisation analysis and regenerates `index.html` and `rationalisation_summary.json`.
+- `index.html` is the original uploaded dark-store map and is left unchanged.
+- `rationalisation_map.html` is the Leaflet map of retained merged stores, all Blinkit stores, and a toggleable layer for cut merged stores.
+- `generate_map.py` recomputes the rationalisation analysis and regenerates `rationalisation_map.html` and `rationalisation_summary.json`.
 - `rationalisation_summary.json` contains the headline counts and modelling assumptions.
 - The source location files are the three CSVs in the repository root.
 
@@ -36,4 +37,4 @@ Using a 3 km service radius per dark store, two stores have more than 70% servic
 python generate_map.py
 ```
 
-Open `index.html` in a browser to view the map.
+Open `rationalisation_map.html` in a browser to view the rationalisation map.
