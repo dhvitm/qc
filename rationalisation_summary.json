@@ -1,0 +1,99 @@
+{
+  "starting_total": 2127,
+  "instamart_starting": 1038,
+  "zepto_starting": 1089,
+  "retained_total": 1290,
+  "cut_total": 837,
+  "retained_instamart": 843,
+  "retained_zepto": 447,
+  "cut_instamart": 195,
+  "cut_zepto": 642,
+  "blinkit_total": 1954,
+  "overlap_threshold_km": 1.4272946359192953,
+  "service_radius_km": 3.0,
+  "overlap_cutoff": 0.7,
+  "standalone_overlap_stats": {
+    "blinkit": {
+      "store_count": 1954,
+      "total_pairs": 1908081,
+      "overlapping_pairs": 10505,
+      "stores_with_any_overlap": 1782,
+      "average_pair_overlap": 0.0014160700856948177,
+      "average_overlapping_pair_overlap": 0.2572086078231935,
+      "average_nearest_neighbor_overlap": 0.5182403367143389,
+      "median_nearest_neighbor_overlap": 0.5858296775151861,
+      "p75_nearest_neighbor_overlap": 0.7120845304838572,
+      "p90_nearest_neighbor_overlap": 0.7985684020454498
+    },
+    "swiggy_instamart": {
+      "store_count": 1038,
+      "total_pairs": 538203,
+      "overlapping_pairs": 3268,
+      "stores_with_any_overlap": 967,
+      "average_pair_overlap": 0.0014931168247154032,
+      "average_overlapping_pair_overlap": 0.2458996188532141,
+      "average_nearest_neighbor_overlap": 0.4516854445441581,
+      "median_nearest_neighbor_overlap": 0.4894938243242056,
+      "p75_nearest_neighbor_overlap": 0.6290774570533828,
+      "p90_nearest_neighbor_overlap": 0.7327418546554985
+    },
+    "zepto": {
+      "store_count": 1089,
+      "total_pairs": 592416,
+      "overlapping_pairs": 5712,
+      "stores_with_any_overlap": 1052,
+      "average_pair_overlap": 0.002424084342501277,
+      "average_overlapping_pair_overlap": 0.25141217609370364,
+      "average_nearest_neighbor_overlap": 0.5529658654080253,
+      "median_nearest_neighbor_overlap": 0.5999647809962979,
+      "p75_nearest_neighbor_overlap": 0.7059222678429703,
+      "p90_nearest_neighbor_overlap": 0.7831783762035842
+    }
+  },
+  "rationalisation_scenarios": [
+    {
+      "overlap_cutoff": 0.5,
+      "overlap_threshold_km": 2.4238365197971032,
+      "retained_total": 848,
+      "cut_total": 1279,
+      "retained_instamart": 582,
+      "retained_zepto": 266,
+      "cut_instamart": 456,
+      "cut_zepto": 823,
+      "method": "greedy_pruned_dominating_set"
+    },
+    {
+      "overlap_cutoff": 0.6,
+      "overlap_threshold_km": 1.9181490587430226,
+      "retained_total": 1030,
+      "cut_total": 1097,
+      "retained_instamart": 685,
+      "retained_zepto": 345,
+      "cut_instamart": 353,
+      "cut_zepto": 744,
+      "method": "greedy_pruned_dominating_set"
+    },
+    {
+      "overlap_cutoff": 0.7,
+      "overlap_threshold_km": 1.4272946359192953,
+      "retained_total": 1290,
+      "cut_total": 837,
+      "retained_instamart": 843,
+      "retained_zepto": 447,
+      "cut_instamart": 195,
+      "cut_zepto": 642,
+      "method": "greedy_pruned_dominating_set"
+    },
+    {
+      "overlap_cutoff": 0.8,
+      "overlap_threshold_km": 0.9464171628000947,
+      "retained_total": 1569,
+      "cut_total": 558,
+      "retained_instamart": 976,
+      "retained_zepto": 593,
+      "cut_instamart": 62,
+      "cut_zepto": 496,
+      "method": "greedy_pruned_dominating_set"
+    }
+  ]
+}
