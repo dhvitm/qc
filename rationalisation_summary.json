@@ -1,0 +1,15 @@
+{
+  "starting_total": 2127,
+  "instamart_starting": 1038,
+  "zepto_starting": 1089,
+  "retained_total": 1290,
+  "cut_total": 837,
+  "retained_instamart": 843,
+  "retained_zepto": 447,
+  "cut_instamart": 195,
+  "cut_zepto": 642,
+  "blinkit_total": 1954,
+  "overlap_threshold_km": 1.4272946359192953,
+  "service_radius_km": 3.0,
+  "overlap_cutoff": 0.7
+}
