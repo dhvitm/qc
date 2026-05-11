@@ -29,6 +29,9 @@
     .metric strong { display: block; font-size: 20px; color: #0f172a; }
     .metric span { display: block; font-size: 11px; color: #475569; }
     .legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 5px 0; }
+    .scenario-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 11px; }
+    .scenario-table th, .scenario-table td { padding: 4px 3px; text-align: right; border-bottom: 1px solid #e2e8f0; }
+    .scenario-table th:first-child, .scenario-table td:first-child { text-align: left; }
     .swatch { width: 13px; height: 13px; border-radius: 50%; display: inline-block; opacity: 0.85; }
     .leaflet-tooltip { font-size: 12px; }
     @media (max-width: 700px) {
@@ -50,6 +53,8 @@
       <div class="metric"><strong>1,954</strong><span>Blinkit stores</span></div>
     </div>
     <p>3 km circles overlap by 70% when centres are within <strong>1.427 km</strong>. The retained set is an exact minimum dominating set of the overlap graph.</p>
+    <p>Avg nearest same-brand overlap: Blinkit <strong>51.8%</strong>, Instamart <strong>45.2%</strong>, Zepto <strong>55.3%</strong>.</p>
+    <table class="scenario-table"><thead><tr><th>Cutoff</th><th>Km</th><th>Retained</th><th>Cut</th></tr></thead><tbody><tr><td>50%</td><td>2.424</td><td>848</td><td>1,279</td></tr><tr><td>60%</td><td>1.918</td><td>1,030</td><td>1,097</td></tr><tr><td>70%</td><td>1.427</td><td>1,290</td><td>837</td></tr><tr><td>80%</td><td>0.946</td><td>1,569</td><td>558</td></tr></tbody></table>
     <div class="legend-row"><span class="swatch" style="background:#2563eb"></span>Retained Instamart + Zepto stores</div>
     <div class="legend-row"><span class="swatch" style="background:#16a34a"></span>Blinkit stores</div>
     <div class="legend-row"><span class="swatch" style="background:#dc2626"></span>Cut merged stores (toggleable layer)</div>
